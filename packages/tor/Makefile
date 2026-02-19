@@ -22,6 +22,7 @@ TOR_VERSION := $(patsubst tor-%,%,$(VERSION))
 TOR_SRC := tor-$(TOR_VERSION)
 TOR_TARBALL := $(TOR_SRC).tar.gz
 TOR_URL := https://dist.torproject.org/$(TOR_TARBALL)
+TOR_LICENSE_URL := https://gitlab.torproject.org/tpo/core/tor/-/raw/$(VERSION)/LICENSE
 
 TOR_APK_DEPS := \
 	openssl-dev \
@@ -73,6 +74,7 @@ dist: compile
 	@cp "$(TOR_INSTALL_PREFIX)/bin/tor" "$(DIST_DIR)/tor"
 	@strip "$(DIST_DIR)/tor"
 	@printf "%s\n" "$(TOR_VERSION)" > "$(DIST_DIR)/version"
+	@wget -q -O "$(DIST_DIR)/LICENSE" "$(TOR_LICENSE_URL)"
 	@tar -czf "$(BUILD_ROOT)/$(ARTIFACT_TARBALL)" -C "$(DIST_DIR)" .
 	@cp "$(BUILD_ROOT)/$(ARTIFACT_TARBALL)" "$(OUT_DIR)/$(ARTIFACT_TARBALL)"
 	@TARBALL_SUM=$$(sha256sum "$(BUILD_ROOT)/$(ARTIFACT_TARBALL)" | awk '{print $$1}'); \

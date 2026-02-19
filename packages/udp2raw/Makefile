@@ -20,6 +20,7 @@ OUT_DIR ?= /out
 UDP2RAW_SRC := udp2raw-$(VERSION)
 UDP2RAW_TARBALL := $(VERSION).tar.gz
 UDP2RAW_URL := https://github.com/wangyu-/udp2raw/archive/refs/tags/$(UDP2RAW_TARBALL)
+UDP2RAW_LICENSE_URL := https://raw.githubusercontent.com/wangyu-/udp2raw/refs/tags/$(VERSION)/LICENSE.md
 
 PACKAGE_NAME := udp2raw-$(ARCH)
 ARTIFACT_TARBALL := $(PACKAGE_NAME).tar.gz
@@ -48,6 +49,7 @@ dist: compile
 	@cp "$(SRC_ROOT)/$(UDP2RAW_SRC)/udp2raw" "$(DIST_DIR)/udp2raw"
 	@strip "$(DIST_DIR)/udp2raw"
 	@printf "%s\n" "$(VERSION)" > "$(DIST_DIR)/version"
+	@wget -q -O "$(DIST_DIR)/LICENSE" "$(UDP2RAW_LICENSE_URL)"
 	@tar -czf "$(BUILD_ROOT)/$(ARTIFACT_TARBALL)" -C "$(DIST_DIR)" .
 	@cp "$(BUILD_ROOT)/$(ARTIFACT_TARBALL)" "$(OUT_DIR)/$(ARTIFACT_TARBALL)"
 	@TARBALL_SUM=$$(sha256sum "$(BUILD_ROOT)/$(ARTIFACT_TARBALL)" | awk '{print $$1}'); \
