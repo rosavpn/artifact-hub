@@ -1,0 +1,22 @@
+# Build outputs
+output/
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Temporary files
+tmp/
+temp/
+
+out/

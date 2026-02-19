@@ -1,0 +1,23 @@
+name: "get package version"
+
+inputs:
+  package:
+    type: string
+    required: true
+outputs:
+  version:
+    value: ${{ steps.get_package_version.outputs.version }}
+runs:
+  using: "composite"
+  steps:
+    - name: "get package version"
+      id: get_package_version
+      shell: bash
+      run: |
+          version=$(jq -r --arg pkg "${{ inputs.package }}" '.[$pkg]' versions.json)
+          if [ -z "$version" ] || [ "$version" = "null" ]; then
+            echo "Package version not found for: ${{ inputs.package }}" >&2
+            exit 1
+          fi
+          echo "version=$version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"

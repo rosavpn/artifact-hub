@@ -1,0 +1,66 @@
+name: "release"
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  packages:
+    runs-on: ubuntu-latest
+    outputs:
+      packages: ${{ steps.get_package_list.outputs.packages }}
+    steps:
+      - name: "checkout"
+        uses: actions/checkout@v4
+
+      - name: "get package list"
+        id: get_package_list
+        uses: ./.github/actions/get_package_list
+  
+  build_packages_amd64:
+    needs: packages
+    uses: ./.github/workflows/build_packages.yml
+    with:
+      packages: ${{ needs.packages.outputs.packages }}
+      arch: amd64
+  
+  build_packages_arm64:
+    needs: packages
+    uses: ./.github/workflows/build_packages.yml
+    with:
+      packages: ${{ needs.packages.outputs.packages }}
+      arch: arm64
+      runner: ubuntu-22.04-arm
+
+  create_release:
+    needs:
+      - build_packages_amd64
+      - build_packages_arm64
+    runs-on: ubuntu-latest
+    steps:
+      - name: "download all artifacts"
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: "create index"
+        run: |
+          find artifacts -maxdepth 4 -type f -name "*.metadata.json" -print0 | xargs -0 jq -s '.' > artifacts/index.json
+          find artifacts -maxdepth 4 -type f -name "*.metadata.json" -delete
+          cat artifacts/index.json
+
+      - name: "generate release tag"
+        id: tag
+        run: |
+          TAG_NAME="$(date +'%y%m%d.%H%M')"
+          echo "TAG=${TAG_NAME}" >> $GITHUB_ENV
+        shell: bash
+
+      - name: "create release"
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: artifacts/**
+          body: "Static compiled packages"
+          name: ${{ env.TAG }}
+          tag: ${{ env.TAG }}
+          token: ${{ secrets.GH_TOKEN }}
