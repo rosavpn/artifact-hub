@@ -1,0 +1,48 @@
+name: "build packages"
+
+on:
+  workflow_call:
+    inputs:
+      packages:
+        type: string
+        required: true
+      arch:
+        type: string
+        required: true
+      runner:
+        type: string
+        required: false
+        default: 'ubuntu-latest'
+
+jobs:
+  build_packages:
+    runs-on: ${{ inputs.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJson(inputs.packages) }}
+    steps:
+      - name: "checkout"
+        uses: actions/checkout@v4
+
+      - name: "get package version"
+        id: get_version
+        uses: ./.github/actions/get_package_version
+        with:
+          package: ${{ matrix.package }}
+      
+      - name: "package ${{ matrix.package }} for ${{ inputs.arch }}"
+        run: |
+          ./build.sh ${{ matrix.package }} ${{ steps.get_version.outputs.version }} ${{ inputs.arch }}
+
+      - name: "upload ${{ matrix.package }} for ${{ inputs.arch }}"
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.package }}-${{ inputs.arch }}.tar.gz
+          path: out/${{ matrix.package }}-${{ inputs.arch }}.tar.gz
+
+      - name: "upload package metadata"
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.package }}-${{ inputs.arch }}.metadata.json
+          path: out/${{ matrix.package }}-${{ inputs.arch }}.metadata.json
