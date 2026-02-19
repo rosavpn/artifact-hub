@@ -1,0 +1,41 @@
+name: "update versions"
+
+on:
+  schedule:
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update_versions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "checkout"
+        uses: actions/checkout@v4
+
+      - name: "setup python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: "run updater"
+        run: python3 update_versions.py
+
+      - name: "create pull request"
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: update versions.json"
+          title: "chore: update versions.json"
+          body: |
+            Automated update from nightly workflow.
+
+            - Runs `update_versions.py`
+            - Updates `versions.json` to latest stable upstream versions
+          branch: chore/nightly-update-versions
+          delete-branch: true
+          add-paths: |
+            versions.json
