@@ -4,6 +4,9 @@ on:
   push:
     branches: [ main ]
 
+permissions:
+  contents: write
+
 jobs:
   packages:
     runs-on: ubuntu-latest
@@ -63,4 +66,4 @@ jobs:
           body: "Static compiled packages"
           name: ${{ env.TAG }}
           tag: ${{ env.TAG }}
-          token: ${{ secrets.GH_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
