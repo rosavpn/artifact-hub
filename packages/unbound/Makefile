@@ -20,6 +20,7 @@ UNBOUND_INSTALL_PREFIX := $(BUILD_ROOT)/unbound-install
 
 UNBOUND_REPO := https://github.com/NLnetLabs/unbound.git
 UNBOUND_SRC := unbound
+UNBOUND_LICENSE_URL := https://raw.githubusercontent.com/NLnetLabs/unbound/refs/tags/$(VERSION)/LICENSE
 
 UNBOUND_APK_DEPS := \
 	openssl-dev \
@@ -84,6 +85,7 @@ dist: compile
 	@if [ -f "$(DIST_DIR)/unbound-host" ]; then strip "$(DIST_DIR)/unbound-host"; fi
 	@if [ -f "$(DIST_DIR)/unbound-anchor" ]; then strip "$(DIST_DIR)/unbound-anchor"; fi
 	@printf "%s\n" "$(VERSION)" > "$(DIST_DIR)/version"
+	@wget -q -O "$(DIST_DIR)/LICENSE" "$(UNBOUND_LICENSE_URL)"
 	@tar -czf "$(BUILD_ROOT)/$(ARTIFACT_TARBALL)" -C "$(DIST_DIR)" .
 	@cp "$(BUILD_ROOT)/$(ARTIFACT_TARBALL)" "$(OUT_DIR)/$(ARTIFACT_TARBALL)"
 	@TARBALL_SUM=$$(sha256sum "$(BUILD_ROOT)/$(ARTIFACT_TARBALL)" | awk '{print $$1}'); \
