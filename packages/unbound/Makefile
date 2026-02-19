@@ -88,8 +88,10 @@ dist: compile
 	@cp "$(BUILD_ROOT)/$(ARTIFACT_TARBALL)" "$(OUT_DIR)/$(ARTIFACT_TARBALL)"
 	@TARBALL_SUM=$$(sha256sum "$(BUILD_ROOT)/$(ARTIFACT_TARBALL)" | awk '{print $$1}'); \
 	UNBOUND_BIN_SHA256=$$(sha256sum "$(DIST_DIR)/unbound" | awk '{print $$1}'); \
-	printf '{"name":"unbound","archive_file":"%s","archive_sum":"%s","version":"%s","arch":"%s","file_sums":{"unbound":"%s"}}\n' \
-	"$(ARTIFACT_TARBALL)" "$$TARBALL_SUM" "$(VERSION)" "$(ARCH)" "$$UNBOUND_BIN_SHA256" > "$(OUT_DIR)/$(METADATA_FILE)"
+	UNBOUND_CHECKCONF_SHA256=$$(if [ -f "$(DIST_DIR)/unbound-checkconf" ]; then sha256sum "$(DIST_DIR)/unbound-checkconf" | awk '{print $$1}'; else printf ""; fi); \
+	UNBOUND_CONTROL_SHA256=$$(if [ -f "$(DIST_DIR)/unbound-control" ]; then sha256sum "$(DIST_DIR)/unbound-control" | awk '{print $$1}'; else printf ""; fi); \
+	printf '{"name":"unbound","archive_file":"%s","archive_sum":"%s","version":"%s","arch":"%s","file_sums":{"unbound":"%s","unbound-checkconf":"%s","unbound-control":"%s"}}\n' \
+	"$(ARTIFACT_TARBALL)" "$$TARBALL_SUM" "$(VERSION)" "$(ARCH)" "$$UNBOUND_BIN_SHA256" "$$UNBOUND_CHECKCONF_SHA256" "$$UNBOUND_CONTROL_SHA256" > "$(OUT_DIR)/$(METADATA_FILE)"
 	@file "$(DIST_DIR)/unbound"
 
 clean:
