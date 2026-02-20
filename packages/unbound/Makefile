@@ -71,7 +71,10 @@ compile: get_source dependencies
 		make -j"$(JOBS)" staticexe=-all-static && \
 		make staticexe=-all-static install
 
-dist: compile
+smoke_test: compile
+	@"$(UNBOUND_INSTALL_PREFIX)/sbin/unbound" -V >/dev/null
+
+dist: smoke_test
 	@rm -rf "$(DIST_DIR)"
 	@mkdir -p "$(DIST_DIR)" "$(OUT_DIR)"
 	@if [ -f "$(UNBOUND_INSTALL_PREFIX)/sbin/unbound" ]; then cp "$(UNBOUND_INSTALL_PREFIX)/sbin/unbound" "$(DIST_DIR)/unbound"; fi
@@ -101,4 +104,4 @@ clean:
 
 all: dist
 
-.PHONY: prepare sys_deps get_source dependencies compile dist clean all
+.PHONY: prepare sys_deps get_source dependencies compile smoke_test dist clean all

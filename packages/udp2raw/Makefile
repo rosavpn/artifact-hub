@@ -43,7 +43,10 @@ compile: get_source dependencies
 	@cd "$(SRC_ROOT)/$(UDP2RAW_SRC)" && \
 		make -j"$(JOBS)" all
 
-dist: compile
+smoke_test: compile
+	@"$(SRC_ROOT)/$(UDP2RAW_SRC)/udp2raw" --help >/dev/null
+
+dist: smoke_test
 	@rm -rf "$(DIST_DIR)"
 	@mkdir -p "$(DIST_DIR)" "$(OUT_DIR)"
 	@cp "$(SRC_ROOT)/$(UDP2RAW_SRC)/udp2raw" "$(DIST_DIR)/udp2raw"
@@ -63,4 +66,4 @@ clean:
 
 all: dist
 
-.PHONY: prepare sys_deps get_source dependencies compile dist clean all
+.PHONY: prepare sys_deps get_source dependencies compile smoke_test dist clean all
