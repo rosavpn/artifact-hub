@@ -1,5 +1,6 @@
 {
     "tor": "tor-0.4.9.5",
     "unbound": "release-1.24.2",
-    "udp2raw": "20230206.0"
+    "udp2raw": "20230206.0",
+    "wghttp": "v1.0.8"
 }
