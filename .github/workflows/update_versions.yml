@@ -27,7 +27,7 @@ jobs:
       - name: "create pull request"
         uses: peter-evans/create-pull-request@v6
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PR_CREATOR_TOKEN || github.token }}
           commit-message: "chore: update versions.json"
           title: "chore: update versions.json"
           body: |
