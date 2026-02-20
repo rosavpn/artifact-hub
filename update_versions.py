@@ -62,6 +62,12 @@ def normalize_udp2raw_tag(tag: str) -> Optional[str]:
     return tag
 
 
+def normalize_wghttp_tag(tag: str) -> Optional[str]:
+    if re.fullmatch(r"v\d+(?:\.\d+)+", tag) is None:
+        return None
+    return tag
+
+
 def version_key(tag: str) -> Tuple[int, ...]:
     numbers = [int(part) for part in re.findall(r"\d+", tag)]
     return tuple(numbers)
@@ -149,12 +155,17 @@ def resolve_latest_versions() -> Dict[str, str]:
         raise RuntimeError("Could not determine latest stable udp2raw version")
     latest["udp2raw"] = udp2raw_latest
 
+    wghttp_latest = pick_latest(fetch_github_tags("brsyuksel", "wghttp"), normalize_wghttp_tag)
+    if wghttp_latest is None:
+        raise RuntimeError("Could not determine latest stable wghttp version")
+    latest["wghttp"] = wghttp_latest
+
     return latest
 
 
 def check_updates(current: Dict[str, str], latest: Dict[str, str]) -> List[Tuple[str, str, str]]:
     updates: List[Tuple[str, str, str]] = []
-    for package in ("tor", "unbound", "udp2raw"):
+    for package in ("tor", "unbound", "udp2raw", "wghttp"):
         cur = current.get(package)
         lat = latest.get(package)
         if cur is None or lat is None:
