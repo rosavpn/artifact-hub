@@ -70,7 +70,10 @@ compile: get_source dependencies
 			RUSTFLAGS="-C target-feature=+crt-static" "$$HOME/.cargo/bin/cargo" +stable build -j "$(JOBS)" --release --target "$(RUST_TARGET)" -p wghttp; \
 		fi
 
-dist: compile
+smoke_test: compile
+	@"$(SRC_ROOT)/$(WGHTTP_SRC)/target/$(RUST_TARGET)/release/wghttp" --help >/dev/null
+
+dist: smoke_test
 	@rm -rf "$(DIST_DIR)"
 	@mkdir -p "$(DIST_DIR)" "$(OUT_DIR)"
 	@cp "$(SRC_ROOT)/$(WGHTTP_SRC)/target/$(RUST_TARGET)/release/wghttp" "$(DIST_DIR)/wghttp"
@@ -90,5 +93,5 @@ clean:
 
 all: dist
 
-.PHONY: prepare sys_deps get_source dependencies compile dist clean all
+.PHONY: prepare sys_deps get_source dependencies compile smoke_test dist clean all
 
