@@ -140,6 +140,17 @@ For a fully static binary, `ldd` should report no dynamic dependencies (often `n
 
 ## Troubleshooting
 
+### Nightly workflow pushes branch but no PR is created
+
+If `update_versions` pushes `chore/nightly-update-versions` but fails with:
+
+`GitHub Actions is not permitted to create or approve pull requests.`
+
+Use one of these options:
+
+1. Enable **Allow GitHub Actions to create and approve pull requests** in repository settings (Actions → General → Workflow permissions).
+2. Add a PAT as repository secret `PR_CREATOR_TOKEN` with permissions to create pull requests in this repo. The workflow will use this token for `create-pull-request`.
+
 ### No files in `out/`
 
 Ensure `build.sh` runs `all` target (already implemented) and inspect container logs for recipe failure.
