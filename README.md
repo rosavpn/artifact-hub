@@ -6,6 +6,7 @@ This repository provides:
 - a shared Docker build environment (`Dockerfile`)
 - a package runner (`build.sh`)
 - per-package recipe Makefiles under `packages/<name>/Makefile`
+- version tracking and updater (`versions.json`, `update_versions.py`)
 
 Each recipe is responsible for fetching source, installing package-specific deps, building statically, and exporting artifacts to `/out` (mapped to host `out/`).
 
@@ -20,12 +21,16 @@ Each recipe is responsible for fetching source, installing package-specific deps
 .
 ├── Dockerfile
 ├── build.sh
+├── update_versions.py
+├── versions.json
 ├── packages/
 │   ├── tor/
 │   │   └── Makefile
 │   ├── udp2raw/
 │   │   └── Makefile
-│   └── unbound/
+│   ├── unbound/
+│   │   └── Makefile
+│   └── wghttp/
 │       └── Makefile
 └── out/                    # generated on demand
 ```
@@ -68,6 +73,12 @@ Build udp2raw:
 
 ```sh
 ./build.sh udp2raw 20230206.0 arm64
+```
+
+Build wghttp:
+
+```sh
+./build.sh wghttp v1.0.8 arm64
 ```
 
 Artifacts are written to:
@@ -137,6 +148,31 @@ For a fully static binary, `ldd` should report no dynamic dependencies (often `n
 - `tor`: pulls official release tarball from `dist.torproject.org` and links against Alpine static libs.
 - `unbound`: pulls source from `https://github.com/NLnetLabs/unbound`, checks out requested ref/tag, and uses `staticexe=-all-static` during make to force static executables.
 - `udp2raw`: pulls release source tarball from `https://github.com/wangyu-/udp2raw`, builds with upstream static `all` target, and packages the `udp2raw` binary.
+- `wghttp`: pulls source from `https://github.com/brsyuksel/wghttp`, builds with Rust musl target (`x86_64-unknown-linux-musl` or `aarch64-unknown-linux-musl`), and packages the `wghttp` binary.
+
+## Version update automation
+
+Default package versions are stored in `versions.json`.
+
+`update_versions.py` checks upstream tags for stable releases and updates `versions.json` when newer versions exist.
+
+Check only (no file write):
+
+```sh
+python3 update_versions.py --check-only
+```
+
+Update versions file:
+
+```sh
+python3 update_versions.py
+```
+
+Exit behavior:
+
+- `0`: no updates found (or successful file update when not check-only)
+- `1`: updates are available in check-only mode
+- `2`: error (network, parse, or file issue)
 
 ## Troubleshooting
 
