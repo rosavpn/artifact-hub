@@ -22,7 +22,7 @@ TOR_VERSION := $(patsubst tor-%,%,$(VERSION))
 TOR_SRC := tor-$(TOR_VERSION)
 TOR_TARBALL := $(TOR_SRC).tar.gz
 TOR_URL := https://dist.torproject.org/$(TOR_TARBALL)
-TOR_LICENSE_URL := https://gitlab.torproject.org/tpo/core/tor/-/raw/$(VERSION)/LICENSE
+TOR_LICENSE_URL := https://gitlab.torproject.org/tpo/core/tor/-/raw/$(TOR_VERSION)/LICENSE
 
 TOR_APK_DEPS := \
 	openssl-dev \
